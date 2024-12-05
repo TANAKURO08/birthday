@@ -2,7 +2,7 @@
 const confettiCanvas = document.getElementById('confetti');
 const ctx = confettiCanvas.getContext('2d');
 
-// Dinamik kenglik va balandlik
+// Canvas o'lchamini dinamik o'zgartirish
 function resizeCanvas() {
     confettiCanvas.width = window.innerWidth;
     confettiCanvas.height = window.innerHeight;
@@ -10,22 +10,22 @@ function resizeCanvas() {
 resizeCanvas();
 window.addEventListener('resize', resizeCanvas);
 
+// Konfetti parametrlarini sozlash
 const confettis = [];
-const confettiCount = window.innerWidth < 768 ? 100 : 200; // Mobilda kamroq konfetti
+const confettiColors = ['#ff6b6b', '#feca57', '#54a0ff', '#1dd1a1', '#ff9ff3'];
+const confettiCount = window.innerWidth < 768 ? 150 : 300; // Mobil uchun kamroq konfetti
 
-// Ranglar
-const colors = ['#ff6b6b', '#feca57', '#54a0ff', '#1dd1a1', '#ff9ff3'];
-
-// Konfetti yaratish
 function createConfetti() {
     for (let i = 0; i < confettiCount; i++) {
         confettis.push({
             x: Math.random() * confettiCanvas.width,
             y: Math.random() * confettiCanvas.height - confettiCanvas.height,
-            size: Math.random() * 10 + 5,
-            color: colors[Math.floor(Math.random() * colors.length)],
+            size: Math.random() * 7 + 3,
+            color: confettiColors[Math.floor(Math.random() * confettiColors.length)],
+            rotation: Math.random() * 360,
             velocityX: Math.random() * 4 - 2,
-            velocityY: Math.random() * 4 + 2,
+            velocityY: Math.random() * 4 + 3,
+            opacity: Math.random() * 0.8 + 0.2,
         });
     }
 }
@@ -33,24 +33,33 @@ function createConfetti() {
 // Konfettini chizish
 function drawConfetti() {
     ctx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+
     confettis.forEach((confetti, index) => {
+        ctx.save();
+        ctx.globalAlpha = confetti.opacity;
+        ctx.translate(confetti.x, confetti.y);
+        ctx.rotate((confetti.rotation * Math.PI) / 180);
         ctx.fillStyle = confetti.color;
         ctx.beginPath();
-        ctx.arc(confetti.x, confetti.y, confetti.size, 0, Math.PI * 2);
+        ctx.arc(0, 0, confetti.size, 0, Math.PI * 2);
         ctx.fill();
+        ctx.restore();
 
         confetti.x += confetti.velocityX;
         confetti.y += confetti.velocityY;
+        confetti.rotation += confetti.velocityX;
 
-        // Ekrandan chiqsa qayta joylash
+        // Ekrandan chiqib ketganda qayta joylash
         if (confetti.y > confettiCanvas.height) {
             confettis[index] = {
                 x: Math.random() * confettiCanvas.width,
                 y: -10,
-                size: Math.random() * 10 + 5,
-                color: colors[Math.floor(Math.random() * colors.length)],
+                size: Math.random() * 7 + 3,
+                color: confettiColors[Math.floor(Math.random() * confettiColors.length)],
+                rotation: Math.random() * 360,
                 velocityX: Math.random() * 4 - 2,
-                velocityY: Math.random() * 4 + 2,
+                velocityY: Math.random() * 4 + 3,
+                opacity: Math.random() * 0.8 + 0.2,
             };
         }
     });
